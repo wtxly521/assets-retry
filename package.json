@@ -71,6 +71,7 @@
     "@rollup/plugin-typescript": "^2.0.1",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.12.14",
+    "@types/react": "^17.0.0",
     "@types/selenium-webdriver": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.10.0",
@@ -111,5 +112,8 @@
     "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.9.6"
+  },
+  "dependencies": {
+    "react": "^17.0.1"
   }
 }

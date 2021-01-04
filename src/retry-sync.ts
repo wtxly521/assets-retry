@@ -1,11 +1,7 @@
 import {
     stringReplace,
-    loadNextScript,
-    loadNextLink,
     hashTarget,
     randomString,
-    arrayFrom,
-    getCssRules,
     getTargetUrl
 } from './util'
 import { InnerAssetsRetryOptions } from './assets-retry'
@@ -13,7 +9,6 @@ import { extractInfoFromUrl, splitUrl } from './url'
 import {
     retryTimesProp,
     failedProp,
-    hookedIdentifier,
     succeededProp,
     doc,
     retryIdentifier,
@@ -22,8 +17,6 @@ import {
     onFailProp,
     domainProp,
     maxRetryCountProp,
-    ScriptElementCtor,
-    LinkElementCtor,
     ImageElementCtor,
     ignoreIdentifier
 } from './constants'
@@ -98,18 +91,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         const onloadCallback = () => {
             currentCollector[succeededProp].push(userModifiedUrl)
         }
-        if (
-            target instanceof ScriptElementCtor &&
-            !target.getAttribute(hookedIdentifier) &&
-            target.src
-        ) {
-            loadNextScript(target, userModifiedUrl, onloadCallback)
-            return
-        }
-        if (target instanceof LinkElementCtor && target.href) {
-            loadNextLink(target, userModifiedUrl, onloadCallback)
-            return
-        }
         if (target instanceof ImageElementCtor && target.src) {
             target.setAttribute(retryIdentifier, randomString())
             target.src = userModifiedUrl
@@ -135,26 +116,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if ((target as HTMLElement).getAttribute(retryIdentifier)) {
             const [srcPath] = splitUrl(originalUrl, domainMap)
             onSuccess(srcPath)
-        }
-        // only handle link element
-        if (!(target instanceof LinkElementCtor)) {
-            return
-        }
-        const supportStyleSheets = doc.styleSheets
-        // do not support styleSheets API
-        if (!supportStyleSheets) {
-            return
-        }
-        const styleSheets = arrayFrom(doc.styleSheets) as any[]
-        const targetStyleSheet = styleSheets.filter(styleSheet => {
-            return styleSheet.href === (target as any).href
-        })[0]
-        const rules = getCssRules(targetStyleSheet)
-        if (rules === null) {
-            return
-        }
-        if (rules.length === 0) {
-            errorHandler(event)
         }
     }
 
